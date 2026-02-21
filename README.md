@@ -1,20 +1,46 @@
-# 🚀 MULTI AI AGENT PLATFORM
+# SPORTS TRAVEL AGENT
 
-A full-stack **Multi-AI Agent application** built with **LangChain, Groq, Tavily, FastAPI, Streamlit**, and deployed using a complete **CI/CD pipeline with Docker, Jenkins, SonarQube, and AWS (ECR + ECS Fargate)**.
+An AI-powered sports travel planning system that helps users discover football matches, plan inter-city travel, find nearby hotels, and generate structured itineraries all through an intelligent, LLM workflow.
+
+This project demonstrates how to design and deploy a production-ready AI agent backend using LangGraph, LangChain tools, FastAPI, and a Streamlit UI, with strict structured outputs suitable for real applications.
 
 ---
 
 ## 📌 Project Overview
 
-This project demonstrates how multiple AI agents can collaborate to solve user queries efficiently. Each agent has a clearly defined responsibility (research, analysis, and reasoning), and they communicate through an orchestrated workflow to produce high-quality, context-aware responses.
+The Sports Travel AI Agent takes a user’s starting location, destinations, and date range and automatically produces a complete football-focused travel plan, including:
 
-Beyond AI orchestration, the project also showcases real-world DevOps practices for deploying AI applications at scale. The system is containerized with Docker, continuously integrated and tested using Jenkins and SonarQube, and deployed to AWS using ECR and ECS Fargate. This ensures the application is scalable, modular, cloud-native, and production-ready, reflecting industry-standard MLOps and DevOps workflows for modern AI systems.
+- Matches available in selected cities
+
+- Stadium details
+
+- Train or bus travel options
+
+- Hotel recommendations near stadiums
+
+- Stadium transport tips
+
+- A day-by-day itinerary
+
+The system is designed as a backend-first AI service, where the user does not write prompts. Instead, user inputs are injected into a fixed system prompt, ensuring predictable, structured, and API-safe responses
 
 ---
 
-## 🧠 System Architecture
+## How it works
+The application uses a LangGraph-based agent loop that allows the LLM to:
 
-![System Architecture](images/architecture.png)
+1. Decide when to call tools
+
+2. Perform web searches via Tavily
+
+3. Aggregate results
+
+4. Return a strict JSON response following a predefined schema
+
+The agent continues invoking tools until no further tool calls are required, then terminates automatically.
+
+This approach avoids  single-shot prompting and mirrors how AI agents operate in real production systems.
+
 
 
 ### Agent Responsibilities
@@ -29,16 +55,6 @@ Agents are dynamically created and orchestrated using LangChain-based logic.
 
 **LangChain** is a framework for building applications powered by LLMs. It provides tools to manage prompts, models, memory, agents, and external tools in a structured way.
 
-In this project, LangChain is used to:
-
-- Connect and manage different AI models (e.g. Groq-hosted LLMs)
-
-- Build an AI agent that can reason, follow instructions, and optionally use tools like web search (Tavily)
-
-- Orchestrate how user input, system prompts, and tool outputs are combined to generate intelligent responses
-
-- It enables the multi-agent, tool-aware, and production-ready AI behavior demonstrated in this application
-
 ---
 
 ##  Tech Stack
@@ -46,8 +62,9 @@ In this project, LangChain is used to:
 ### Backend
 - **FastAPI** - Manages requests and agent orchestration
 - **LangChain**
-- **Groq API** - Fast and cost-efficient reasoning for agents
-- **Tavily Search API** - Fast and cost-efficient reasoning for agents
+- **LangGraph** - Agent Workflow orchestration
+- **OpenAI API** - Reasoning Engine
+- **Tavily Search API** - Real-time web search
 
 ### Frontend
 - **Streamlit**
@@ -61,6 +78,19 @@ In this project, LangChain is used to:
 
 ---
 
+## Core Design Decisions
+
+- System-controlled prompting
+Users never write prompts. Inputs are validated and injected into a fixed system instruction.
+
+- Strict JSON outputs
+The agent is constrained to return only valid JSON matching an explicit schema.
+
+- Tool-first reasoning
+The agent autonomously decides when to search for matches, transport, or stadium information.
+
+- Separation of concerns
+Business logic, agent orchestration, API, and UI are cleanly separated.
 
 ## Project Structure
 
@@ -70,7 +100,6 @@ In this project, LangChain is used to:
 - `app/main.py` — Main code which runs Frontend and Backend with the aid of threads
 - `app/common/custom_exception.py` -  Returning detailed error
 - `app/common/logger.py` - Logging actions
-- `app/config/settings.py` - Loading our Groq and Tavily keys as well as our allowed models
 - `custom_jenkins/Dockerfile` - Jenkins container Dockerfile
 
 ---
@@ -87,15 +116,24 @@ In this project, LangChain is used to:
 
 ## 🔄 Application Flow
 
-1. User submits query from Streamlit UI
-2. FastAPI backend receives request
-3. Multi-agent system processes request
-4. Agents collaborate and generate response
-5. Result returned to UI
+1. User enters:
 
-![Flow](images/application.png)
+- Origin city
+- Destination cities
+- Start date
+- End date
 
-![Flow](images/application1.png)
+![Flow](images/screenshot.png)
+
+2. Streamlit UI sends structured data to FastAPI
+
+3. Backend builds the system prompt
+
+4. LangGraph agent runs tool loops
+
+5. Final structured travel plan is returned as JSON
+
+6. UI renders the itinerary
 
 ---
 
@@ -105,9 +143,6 @@ The CI/CD pipeline is fully automated using Jenkins:
 
 1. Code checkout from GitHub
 2. Static code analysis with SonarQube
-
-    ![Sonartest](images/sonar.png)
-
 3. Docker image build
 4. Image pushed to AWS Elastic Container Registry
 5. Deployed to AWS ECS (Fargate)
@@ -125,35 +160,6 @@ Every push to main triggers a pipeline → builds → scans → deploys automati
 
 ---
 
-## 🚧 Challenges Faced & Solutions
-
-### 1. LangChain Import & Version Conflicts
-**Problem:** Multiple breaking changes (`langchain.schema`, `HumanMessage`, agent APIs). Most fuction calls were obsolute and had been migrated from LangGraph to LangChain 
-
-**Solution:** Did a lot of documentation reading and research to find the right information. Migrated to `langchain-core`, updated imports, and refactored agent creation logic to match the latest LangChain API signature.
-
----
-
-### 2. Jenkins & Sonarqube Server
-**Problem:** Initial allocated EC2 instance to run Jenkins and Sonarqube server didn't have enough capacity to run efficiently
-
-**Solution:** Ensured I upgraded the EC2 size on AWS to t3.large
-
----
-
-
-### 3. AWS CLI Not Found in Jenkins
-**Problem:** **AWS CLI unavailable during pipeline execution** 
-
-My Jenkins server was ran from a docker image inside the EC2, because of this I had to install the AWS CLI inside the Jenkins docker container. 
-
-However when running the CI/CD Pipeline, the pipeline couldn't find the AWS CLI. This was due to the fact that I restarted the container earlier. As a result of this, the installed AWS CLI wasn't presisted in the changes
-
-**Solution:** Installed AWS CLI inside the Jenkins Docker image. From the custom_jenkins docker file, you can see that I added and extra line of code which installs the AWS CLI inside the Jenkins container whenever the image is built
-
----
----
-
 ## ☁️ Deployment
 
 - Jenkins runs inside Docker on AWS EC2
@@ -163,26 +169,27 @@ However when running the CI/CD Pipeline, the pipeline couldn't find the AWS CLI.
 
 ---
 
-## 🎯 Key Takeaways
+## What This Project Demonstrates
 
-- Real-world AI agent orchestration  
-- Full CI/CD automation  
-- Demonstrates LLM orchestration in a multi-agent ecosystem
-- Combines DevOps + Cloud + AI engineering
-- Real troubleshooting experience and Production-grade architecture  
+- Real agent-based AI (not chat completion demos)
+
+- Tool-augmented reasoning with web search
+
+- Structured AI outputs suitable for APIs
+
+- Backend-driven prompt engineering
+
+- Clean separation between UI, API, and AI logic
 
 ---
 
 ## Future Improvements
 
-- Add role-based agent selection
-- Ecpanding logger file code to report logs to AWS cloud monitoring
-- Implement Infrastructure as Code to fast track deployment
-- Optimizing Application by implemeting Cloud Architecture best practices such as Disaster Recovery, Security architecture, load balancing.
-
+- Replace web search with direct transport APIs
+- Expand to non-football sports
 ---
 
 ##  Author
 
 **Tobi Segun Oluwategbe**  
-AI / MLOps / DevOps Engineer  
+AI / DevOps Engineer  
