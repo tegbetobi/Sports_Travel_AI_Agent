@@ -1,0 +1,11 @@
+langchain-community
+python-dotenv
+fastapi
+pydantic
+langgraph
+langchain-core
+langchain
+langchain-tavily
+langchain_openai
+tavily-python
+amadeus
