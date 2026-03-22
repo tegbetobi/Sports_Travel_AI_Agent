@@ -96,7 +96,6 @@ Business logic, agent orchestration, API, and UI are cleanly separated.
 
 - `app/frontend/ui.py` — Frontend application (Streamlit)
 - `app/backend/api.py` — FastAPI to receive requests
-- `app/core/ai_agent.py` — Reasearch and Reasoning agent code
 - `app/main.py` — Main code which runs Frontend and Backend with the aid of threads
 - `app/common/custom_exception.py` -  Returning detailed error
 - `app/common/logger.py` - Logging actions
