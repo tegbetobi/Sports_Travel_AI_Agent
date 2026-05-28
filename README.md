@@ -72,7 +72,6 @@ Agents are dynamically created and orchestrated using LangChain-based logic.
 ### DevOps & Cloud Infrastructure
 - **Docker**
 - **Jenkins**
-- **SonarQube**
 - **AWS ECR**
 - **AWS ECS Fargate**
 
@@ -141,17 +140,15 @@ Business logic, agent orchestration, API, and UI are cleanly separated.
 The CI/CD pipeline is fully automated using Jenkins:
 
 1. Code checkout from GitHub
-2. Static code analysis with SonarQube
-3. Docker image build
-4. Image pushed to AWS Elastic Container Registry
-5. Deployed to AWS ECS (Fargate)
+2. Docker image build
+3. Image pushed to AWS Elastic Container Registry
+4. Deployed to AWS ECS (Fargate)
 
 Every push to main triggers a pipeline → builds → scans → deploys automatically.
 
      Stage             | Tool Used                               
      ----------------- | --------------------------------------- 
      Build, Test, Lint | Jenkins                                 
-     Code Quality      | SonarQube                               
      Containerization  | Docker                                  
      Image Registry    | AWS ECR                                 
      Deployment        | AWS ECS Fargate (serverless containers) 
@@ -162,7 +159,6 @@ Every push to main triggers a pipeline → builds → scans → deploys automati
 ## ☁️ Deployment
 
 - Jenkins runs inside Docker on AWS EC2
-- Sonarqube runs as well inside Docker on AWS EC2
 - Docker images pushed to AWS ECR
 - Application deployed using **AWS ECS Fargate**
 
