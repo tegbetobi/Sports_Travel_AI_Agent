@@ -1,6 +1,6 @@
 # SPORTS TRAVEL AGENT
 
-An AI-powered sports travel planning system that helps users discover football matches, plan inter-city travel, find nearby hotels, and generate structured itineraries all through an intelligent, LLM workflow.
+An AI-powered sports travel planning system that helps users discover football matches, plan inter-city travel and generate structured itineraries all through an intelligent, LLM workflow.
 
 This project demonstrates how to design and deploy a production-ready AI agent backend using LangGraph, LangChain tools, FastAPI, and a Streamlit UI, with strict structured outputs suitable for real applications.
 
@@ -15,8 +15,6 @@ The Sports Travel AI Agent takes a user’s starting location, destinations, and
 - Stadium details
 
 - Train or bus travel options
-
-- Hotel recommendations near stadiums
 
 - Stadium transport tips
 
@@ -48,7 +46,7 @@ This approach avoids  single-shot prompting and mirrors how AI agents operate in
 | Agent | Description |
 |-----|------------|
 | Research Agent | Uses Tavily API to retrieve real-time information e.g Live info, trending topics |
-| Reasoning Agent | Generates final responses using Groq LLM e.g Recommendations, final answer|
+| Reasoning Agent | Generates final responses e.g Recommendations, final answer|
 
 Agents are dynamically created and orchestrated using LangChain-based logic.
 
