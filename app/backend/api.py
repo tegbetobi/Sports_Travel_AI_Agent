@@ -16,7 +16,6 @@ tools = [
     search_football_events_tool,
     get_stadium_info_tool,
     search_train_schedule_tool,
-    search_hotels_tool,
     get_current_date_tool,
 ]
 
